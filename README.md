@@ -33,6 +33,7 @@ Submit your JavaScript code along with detailed documentation and comments that 
 
 ### **Example**
 
+```js
 Here's a simplified example structure to give you an idea of what your code might look like:
 
 class Stack {
@@ -57,3 +58,4 @@ class LinkedList {
 
 // Implement Min/Max Stack, Binary Search Tree, Graph Algorithms...
 // Demonstrate usage and provide documentation...
+```
