@@ -1,33 +1,26 @@
+// =======================
+// Part 1: Data Structures
+// =======================
+
 // Stack
+// Methods: push(element), pop(), peek()
 class Stack {
     constructor() {
         this.items = [];
     }
-
     push(element) {
         this.items.push(element);
     }
-
     pop() {
-        if (this.isEmpty()) {
-            return null;
-        }
         return this.items.pop();
     }
-
     peek() {
-        if (this.isEmpty()) {
-            return null;
-        }
         return this.items[this.items.length - 1];
-    }
-
-    isEmpty() {
-        return this.items.length === 0;
     }
 }
 
-// Queue 
+// Queue
+// Methods: enqueue(element), dequeue(), peek()
 class Queue {
     constructor() {
         this.items = [];
@@ -36,95 +29,112 @@ class Queue {
         this.items.push(element);
     }
     dequeue() {
-        if (this.isEmpty()) {
-            return null;
-        }
         return this.items.shift();
     }
     peek() {
-        if (this.isEmpty()) return null;
         return this.items[0];
-    }
-    isEmpty() {
-        return this.items.length === 0;
     }
 }
 
 // Binary Tree
+// Methods: insert(value), search(value), inOrder(), preOrder(), postOrder()
+class TreeNode {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
 class BinaryTree {
     constructor() {
         this.root = null;
     }
 
-    insert(value, node = this.root) {
-        if (!this.root) return this.root = { value, left: null, right: null };
-        if (value < node.value) {
-            if (!node.left) node.left = { value, left: null, right: null };
-            else this.insert(value, node.left);
-        } else {
-            if (!node.right) node.right = { value, left: null, right: null };
-            else this.insert(value, node.right);
+    insert(value) {
+        const newNode = new TreeNode(value);
+        if (!this.root) {
+            this.root = newNode;
+            return;
+        }
+        let queue = [this.root];
+        while (queue.length) {
+            let current = queue.shift();
+            if (!current.left) {
+                current.left = newNode;
+                return;
+            } else if (!current.right) {
+                current.right = newNode;
+                return;
+            } else {
+                queue.push(current.left, current.right);
+            }
         }
     }
 
-    search(value, node = this.root) {
-        if (!node) return false;
-        if (node.value === value) return true;
-        return value < node.value ? this.search(value, node.left) : this.search(value, node.right);
+    search(value) {
+        let queue = [this.root];
+        while (queue.length) {
+            let current = queue.shift();
+            if (current.value === value) return true;
+            if (current.left) queue.push(current.left);
+            if (current.right) queue.push(current.right);
+        }
+        return false;
     }
 
     inOrder(node = this.root) {
-        if (!node) return;
-        this.inOrder(node.left);
-        console.log(node.value);
-        this.inOrder(node.right);
+        if (node) {
+            this.inOrder(node.left);
+            console.log(node.value);
+            this.inOrder(node.right);
+        }
     }
 }
 
 // Graph
+// Methods: addVertex(vertex), addEdge(vertex1, vertex2), DFS(start), BFS(start)
 class Graph {
     constructor() {
         this.adjacencyList = {};
     }
-
     addVertex(vertex) {
-        if (!this.adjacencyList[vertex]) this.adjacencyList[vertex] = [];
+        if (!this.adjacencyList[vertex]) {
+            this.adjacencyList[vertex] = [];
+        }
     }
-
     addEdge(v1, v2) {
         this.adjacencyList[v1].push(v2);
-        this.adjacencyList[v2].push(v1); 
+        this.adjacencyList[v2].push(v1);
     }
-
     DFS(start, visited = new Set()) {
-        if (!start) return;
         console.log(start);
         visited.add(start);
-        this.adjacencyList[start].forEach(neighbor => {
+        for (let neighbor of this.adjacencyList[start]) {
             if (!visited.has(neighbor)) {
                 this.DFS(neighbor, visited);
             }
-        });
+        }
     }
-
     BFS(start) {
-        const queue = [start];
-        const visited = new Set([start]);
-
+        let queue = [start];
+        let visited = new Set();
+        visited.add(start);
         while (queue.length) {
-            const vertex = queue.shift();
+            let vertex = queue.shift();
             console.log(vertex);
-            this.adjacencyList[vertex].forEach(neighbor => {
+            for (let neighbor of this.adjacencyList[vertex]) {
                 if (!visited.has(neighbor)) {
                     visited.add(neighbor);
                     queue.push(neighbor);
                 }
-            });
+            }
         }
     }
 }
 
-// Linked List 
+// Linked List
+// Methods: insert(value), delete(value), search(value)
 class ListNode {
     constructor(value) {
         this.value = value;
@@ -136,7 +146,6 @@ class LinkedList {
     constructor() {
         this.head = null;
     }
-
     insert(value) {
         const newNode = new ListNode(value);
         if (!this.head) {
@@ -149,7 +158,6 @@ class LinkedList {
         }
         current.next = newNode;
     }
-
     delete(value) {
         if (!this.head) return;
         if (this.head.value === value) {
@@ -164,7 +172,6 @@ class LinkedList {
             current.next = current.next.next;
         }
     }
-
     search(value) {
         let current = this.head;
         while (current) {
@@ -175,70 +182,76 @@ class LinkedList {
     }
 }
 
+// ============================
+// Part 2: Algorithmic Problems
+// ============================
+
 // Min/Max Stack
+// Methods: push(element), pop(), getMin(), getMax()
 class MinMaxStack {
     constructor() {
         this.stack = [];
         this.minStack = [];
         this.maxStack = [];
     }
-
-    push(value) {
-        this.stack.push(value);
-        if (this.minStack.length === 0 || value <= this.getMin()) {
-            this.minStack.push(value);
+    push(element) {
+        this.stack.push(element);
+        if (!this.minStack.length || element <= this.getMin()) {
+            this.minStack.push(element);
         }
-        if (this.maxStack.length === 0 || value >= this.getMax()) {
-            this.maxStack.push(value);
+        if (!this.maxStack.length || element >= this.getMax()) {
+            this.maxStack.push(element);
         }
     }
-
     pop() {
-        const value = this.stack.pop();
-        if (value === this.getMin()) this.minStack.pop();
-        if (value === this.getMax()) this.maxStack.pop();
-        return value;
+        const removed = this.stack.pop();
+        if (removed === this.getMin()) this.minStack.pop();
+        if (removed === this.getMax()) this.maxStack.pop();
+        return removed;
     }
-
     getMin() {
         return this.minStack[this.minStack.length - 1];
     }
-
     getMax() {
         return this.maxStack[this.maxStack.length - 1];
     }
 }
 
-// BST check
+// Check if Binary Tree is BST
 function isBST(node, min = -Infinity, max = Infinity) {
     if (!node) return true;
     if (node.value <= min || node.value >= max) return false;
-    return isBST(node.left, min, node.value) &&
-           isBST(node.right, node.value, max);
+    return isBST(node.left, min, node.value) && isBST(node.right, node.value, max);
 }
 
-// BFS Shortest Path
-function bfsShortestPath(graph, start, end) {
-    const queue = [[start]];
+// Dijkstra's Algorithm
+function dijkstra(graph, start) {
+    const distances = {};
     const visited = new Set();
+    const pq = [[start, 0]];
 
-    while (queue.length) {
-        const path = queue.shift();
-        const vertex = path[path.length - 1];
+    for (let vertex in graph) {
+        distances[vertex] = Infinity;
+    }
+    distances[start] = 0;
 
-        if (vertex === end) return path;
-        if (!visited.has(vertex)) {
-            visited.add(vertex);
-            graph.adjacencyList[vertex].forEach(neighbor => {
-                const newPath = [...path, neighbor];
-                queue.push(newPath);
-            });
+    while (pq.length) {
+        pq.sort((a, b) => a[1] - b[1]);
+        const [current, dist] = pq.shift();
+        if (visited.has(current)) continue;
+        visited.add(current);
+        for (let [neighbor, weight] of graph[current]) {
+            let newDist = dist + weight;
+            if (newDist < distances[neighbor]) {
+                distances[neighbor] = newDist;
+                pq.push([neighbor, newDist]);
+            }
         }
     }
-    return null;
+    return distances;
 }
 
-// Linked List Cycle Detection
+// Linked List Cycle Detection (Floyd's Algorithm)
 function hasCycle(head) {
     let slow = head;
     let fast = head;
@@ -250,47 +263,76 @@ function hasCycle(head) {
     return false;
 }
 
-// DEMO
-const stack = new Stack();
-stack.push(1);
-stack.push(2);
-console.log("Stack pop:", stack.pop()); // 2
-console.log("Stack peek:", stack.peek()); // 1
+// =====================
+// Part 3: Demonstration
+// =====================
 
-const queue = new Queue();
-queue.enqueue(10);
-queue.enqueue(20);
-console.log("Queue dequeue:", queue.dequeue()); // 10
+console.log("Stack Demo");
+let stack = new Stack();
+stack.push(10);
+stack.push(20);
+console.log(stack.peek());
+stack.pop();
+console.log(stack.peek());
 
-const tree = new BinaryTree();
-tree.insert(5);
-tree.insert(3);
-tree.insert(7);
-console.log("InOrder Tree:");
+console.log("\nQueue Demo");
+let queue = new Queue();
+queue.enqueue(1);
+queue.enqueue(2);
+console.log(queue.peek());
+queue.dequeue();
+console.log(queue.peek());
+
+console.log("\nBinary Tree Demo");
+let tree = new BinaryTree();
+tree.insert(10);
+tree.insert(20);
+tree.insert(30);
 tree.inOrder();
-console.log("Is BST?", isBST(tree.root)); // true
 
-const graph = new Graph();
+console.log("\nGraph Demo");
+let graph = new Graph();
 graph.addVertex("A");
 graph.addVertex("B");
 graph.addVertex("C");
 graph.addEdge("A", "B");
-graph.addEdge("B", "C");
-console.log("DFS Graph:");
+graph.addEdge("A", "C");
 graph.DFS("A");
-console.log("Shortest path A->C:", bfsShortestPath(graph, "A", "C"));
 
-const list = new LinkedList();
-list.insert(1);
-list.insert(2);
-list.insert(3);
-console.log("LinkedList search(2):", list.search(2));
+console.log("\nLinked List Demo");
+let list = new LinkedList();
+list.insert(5);
+list.insert(10);
+console.log(list.search(10));
+list.delete(10);
+console.log(list.search(10));
 
-const mmStack = new MinMaxStack();
-mmStack.push(3);
-mmStack.push(1);
+console.log("\nMin/Max Stack Demo");
+let mmStack = new MinMaxStack();
 mmStack.push(5);
-console.log("Min in stack:", mmStack.getMin()); // 1
-console.log("Max in stack:", mmStack.getMax()); // 5
+mmStack.push(1);
+mmStack.push(10);
+console.log(mmStack.getMin());
+console.log(mmStack.getMax());
 
+console.log("\nCheck BST Demo");
+let bst = new TreeNode(10);
+bst.left = new TreeNode(5);
+bst.right = new TreeNode(15);
+console.log(isBST(bst));
 
+console.log("\nDijkstra Demo");
+const weightedGraph = {
+    A: [["B", 2], ["C", 4]],
+    B: [["A", 2], ["C", 1], ["D", 7]],
+    C: [["A", 4], ["B", 1], ["D", 3]],
+    D: [["B", 7], ["C", 3]]
+};
+console.log(dijkstra(weightedGraph, "A"));
+
+console.log("\nLinked List Cycle Detection Demo");
+let cycleList = new ListNode(1);
+cycleList.next = new ListNode(2);
+cycleList.next.next = new ListNode(3);
+cycleList.next.next.next = cycleList.next;
+console.log(hasCycle(cycleList));
